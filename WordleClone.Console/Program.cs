@@ -33,38 +33,33 @@ public class Program
 
     private static void Run()
     {
-        string[] words = { "WRUNG", "QUOTE", "FLING", "CHAIN", "BADGE",
-            "BARGE", "QUITE", "BLAST","KNIFE", "CREPE",
-            "KNACK","HORSE","APPLE","FRUIT","DRUID",
-            "KNOCK","CRAMP","NUDGE","ABORT","CLAMP",
-            "KNOLL","CROPS","FLANK","CRASH","CRASS" };
-        string realAnswer = GetRandomWord(words);
+        string[] words = GetWordList();
+        string correctWord = GetRandomWord(words).Trim().ToUpper();
         bool win = false;
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 1; i <= 6; i++)
         {
             Console.Write("\n> ");
-            string answer = Console.ReadLine();
-            answer = answer.Trim().ToUpper();
+            string answer = Console.ReadLine().Trim().ToUpper();
 
-            if (answer.Length == 5)
+            if (answer.Length == 5 && words.Contains(answer))
             {
-                Console.Write($"\t{i + 1}: ");
+                Console.Write($"\t{i}: ");
 
                 for (int j = 0; j < 5; j++)
                 {
                     char letter = answer[j];
 
-                    if (letter == realAnswer[j])
+                    if (letter == correctWord[j])
                     {
                         Console.BackgroundColor = ConsoleColor.Green;
                         Console.ForegroundColor = ConsoleColor.Black;
                     }
-                    else if (realAnswer.Contains(answer[j]))
+                    else if (correctWord.Contains(answer[j]))
                     {
                         Console.BackgroundColor = ConsoleColor.Yellow;
                         Console.ForegroundColor = ConsoleColor.Black;
-                    }
+                     }
                     else
                     {
                         Console.BackgroundColor = ConsoleColor.Black;
@@ -89,19 +84,59 @@ public class Program
                 i--;
             }
 
-            if (answer == realAnswer)
+            if (answer == correctWord)
             {
                 win = true;
-                Console.WriteLine($"\nYou found the right word in {i + 1} guesses!");
+                Console.WriteLine($"\nYou found the right word in {i} guesses!");
                 break;
             }
         }
-        Console.WriteLine(win ? "Congratulations!" : $"\nYou lost! The correct word was {realAnswer}.");
+        Console.WriteLine(win ? "Congratulations!" : $"\nYou lost! The correct word was {correctWord}.");
 
     }
 
     private static string GetRandomWord(string[] words)
     {
         return words[Random.Shared.Next(0, words.Length - 1)];
+    }
+
+    /// <summary>
+    /// Reads word list from file.
+    /// </summary>
+    /// <returns>string[] wordlist</returns>
+    private static string[] GetWordList()
+    {
+        string[] wordlist = File.ReadAllLines("../../../10000commonestonlyfiveletters.txt");
+        return wordlist;
+    }
+
+    /// <summary>
+    /// Word list must be plain text and contain only one word per row
+    /// </summary>
+    /// <param name="filepath">The path to the file. Prefix filepath with "../../../" if your file is in the same dir as Program.cs</param>
+    /// <returns>string[] wordlist</returns>
+    /// 
+    private static string[] GetOnlyFiveLetterWordsFromFile(string filepath)
+    {
+        List<string> result = new List<string>();
+
+        string[] words = File.ReadAllLines(filepath);
+
+        foreach (string word in words)
+        {            
+            if (word.Trim().Length == 5 && !word.Contains<char>(' '))
+                result.Add(word);
+        }
+
+        /* 
+        //Debug code
+        Console.WriteLine(result.Count.ToString());
+        for (int i = 0; i < 10; i++)
+            Console.WriteLine(result.ElementAt<string>(Random.Shared.Next(0, result.Count)));
+
+        File.WriteAllLines("../../../10000commonestonlyfiveletters.txt", result);
+        */
+
+        return result.ToArray();
     }
 }
