@@ -2,6 +2,12 @@
 
 public class Program
 {
+    enum Color
+    {
+        Green,
+        Yellow,
+        Black
+    }
     public static void Main(string[] args)
     {
         Console.WriteLine(".---------.");
@@ -44,29 +50,51 @@ public class Program
 
             if (answer.Length == 5 && words.Contains(answer))
             {
-                Console.Write($"\t{i}: ");
+                List<char> correctLetters = correctWord.ToCharArray().ToList();
+                Color[] resultColor = { Color.Black, Color.Black, Color.Black, Color.Black, Color.Black };
 
                 for (int j = 0; j < 5; j++)
                 {
                     char letter = answer[j];
 
-                    if (letter == correctWord[j])
+                    if (correctWord[j] == letter)
+                    {
+                        resultColor[j] = Color.Green;
+                        correctLetters.Remove(letter);
+                    }
+                }
+                for (int j = 0; j < 5; j++)
+                {
+                    char letter = answer[j];
+                    if (resultColor[j] != Color.Green && correctLetters.Contains(letter))
+                    {
+                        resultColor[j] = Color.Yellow;
+                        correctLetters.Remove(letter);
+                    }
+                }
+                Console.Write($"\t{i}: ");
+                for (int j = 0; j < 5; j++)
+                {
+                    Console.ResetColor();
+                    if (resultColor[j] == Color.Black)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+
+                    }
+                    else if (resultColor[j] == Color.Yellow)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                    }
+                    else if (resultColor[j] == Color.Green)
                     {
                         Console.BackgroundColor = ConsoleColor.Green;
                         Console.ForegroundColor = ConsoleColor.Black;
                     }
-                    else if (correctWord.Contains(answer[j]))
-                    {
-                        Console.BackgroundColor = ConsoleColor.Yellow;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                     }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                    }
-                    Console.Write(letter);
-                    Console.ResetColor();
+                    Console.Write(answer[j]);
                 }
+                Console.ResetColor();
             }
             else if (answer.Length != 5)
             {
@@ -123,7 +151,7 @@ public class Program
         string[] words = File.ReadAllLines(filepath);
 
         foreach (string word in words)
-        {            
+        {
             if (word.Trim().Length == 5 && !word.Contains<char>(' '))
                 result.Add(word);
         }
